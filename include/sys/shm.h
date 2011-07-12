@@ -60,6 +60,7 @@ struct shm_info {
   unsigned long swap_successes;
 };
 
+#if 0
 #if defined(__i386__) || defined(__mips__) || defined(__arm__) || defined(__powerpc__) || defined (__powerpc64__) || defined(__s390__) || defined(__hppa__) || defined(__x86_64__) || defined(__ia64__)
 #define PAGE_SIZE 4096UL
 #define PAGE_SHIFT 12
@@ -68,6 +69,10 @@ struct shm_info {
 #define PAGE_SIZE 8192UL
 #define PAGE_SHIFT 13
 #endif
+#endif
+
+#define PAGE_SIZE 512
+#define PAGE_SHIFT 9
 
 extern int shmget(key_t key, int size, int shmflg) __THROW;
 extern void *shmat(int shmid, const void *shmaddr, int shmflg) __THROW;

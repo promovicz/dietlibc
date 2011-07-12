@@ -8,6 +8,7 @@
 #define PAGE_SIZE 4096
 #endif
 
+#if 0
 size_t __libc_getpagesize(void);
 size_t __libc_getpagesize(void) {
   long* x=(long*)environ;
@@ -22,4 +23,5 @@ size_t __libc_getpagesize(void) {
 }
 
 size_t getpagesize(void)       __attribute__((weak,alias("__libc_getpagesize")));
+#endif
 

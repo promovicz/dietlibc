@@ -3,16 +3,16 @@
 
 /* feel free to comment some of these out to reduce code size */
 
-#define WANT_FLOATING_POINT_IN_PRINTF
-#define WANT_FLOATING_POINT_IN_SCANF
-#define WANT_CHARACTER_CLASSES_IN_SCANF
+/* #define WANT_FLOATING_POINT_IN_PRINTF */
+/* #define WANT_FLOATING_POINT_IN_SCANF */
+/* #define WANT_CHARACTER_CLASSES_IN_SCANF */
 #define WANT_NULL_PRINTF
 /* #define WANT_ERROR_PRINTF */
 #define WANT_LONGLONG_PRINTF
 #define WANT_LONGLONG_SCANF
 
 /* 128 or 2048 bytes buffer size? */
-/* #define WANT_SMALL_STDIO_BUFS */
+#define WANT_SMALL_STDIO_BUFS
 
 /* want fread to read() directly if size of data is larger than buffer?
  * This costs a few bytes but is worth it if the application is already
@@ -20,19 +20,19 @@
 #define WANT_FREAD_OPTIMIZATION
 
 /* this is only for meaningful for ttyname and sysconf_cpus so far */
-#define SLASH_PROC_OK
+/* #define SLASH_PROC_OK */
 
 /* use errno_location instead of errno; NEEDED FOR MULTI-THREADING! */
-#define WANT_THREAD_SAFE
+/* #define WANT_THREAD_SAFE */
 
 /* support __thread; NEEDED FOR MULTI-THREADING! */
-#define WANT_TLS
+/* #define WANT_TLS */
 
 /* make the startcode, etc. dynamic aware ({con,de}structors) */
 /* #define WANT_DYNAMIC */
 
 /* GDB support in the dynamic linker */
-#define WANT_LD_SO_GDB_SUPPORT
+/* #define WANT_LD_SO_GDB_SUPPORT */
 
 /* do you want smaller or faster string routines? */
 #define WANT_FASTER_STRING_ROUTINES
@@ -44,28 +44,28 @@
 /* on i386, Linux has an alternate syscall method since 2002/12/16 */
 /* on my Athlon XP, it is twice as fast, but it's only in kernel 2.5 */
 /* 20040118: enabling this breaks User Mode Linux!  It's their fault. */
-#define WANT_SYSENTER
+/* #define WANT_SYSENTER */
 
 #define WANT_LINKER_WARNINGS
 
 /* you need to define this if you want to run your programs with large
  * file support on kernel 2.2 or 2.0 */
-#define WANT_LARGEFILE_BACKCOMPAT
+/* #define WANT_LARGEFILE_BACKCOMPAT */
 
 /* do you want localtime(3) to read /etc/localtime?
  * Needed for daylight saving time etc. */
-#define WANT_TZFILE_PARSER
+/* #define WANT_TZFILE_PARSER */
 
 /* do you want the DNS routines to parse and use "domain" and "search"
  * lines from /etc/resolv.conf?  Normally not used on boot floppies and
  * embedded environments. */
-#define WANT_FULL_RESOLV_CONF
+/* #define WANT_FULL_RESOLV_CONF */
 
 /* do you want IPv6 transport support in the DNS resolver? */
-#define WANT_IPV6_DNS
+/* #define WANT_IPV6_DNS */
 
 /* do you want gethostbyname and friends to consult /etc/hosts? */
-#define WANT_ETC_HOSTS
+/* #define WANT_ETC_HOSTS */
 
 /* do you want gethostbyname to understand dotted decimal IP numbers
  * directly and not try to resolve them? */
@@ -87,17 +87,17 @@
 /* This enables zeroconf DNS aka Rendezvous aka Bonjour. */
 /* This code will try zeroconf DNS if you ask for host.local or if you
  * ask for an unqualified hostname */
-#define WANT_PLUGPLAY_DNS
+/* #define WANT_PLUGPLAY_DNS */
 
 /* This enables LLMNR, the MS variant of zeroconf DNS.  This only works
  * if you also enabled WANT_PLUGPLAY_DNS */
-#define WANT_LLMNR
+/* #define WANT_LLMNR */
 
 /* Do you want valgrind support?  If enabled, the startup code will
  * check for valgrind, and if detected, turn off optimized SIMD string
  * routines that cause false positives in valgrind.  This enlarges and
  * slightly slows down your code! */
-#define WANT_VALGRIND_SUPPORT
+/* #define WANT_VALGRIND_SUPPORT */
 
 /* do you want that malloc(0) return a pointer to a "zero-length" object
  * that is realloc-able; means realloc(..,size) gives a NEW object (like a

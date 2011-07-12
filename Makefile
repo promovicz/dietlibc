@@ -8,7 +8,9 @@ LIBDIR=${prefix}/lib
 BINDIR=${prefix}/bin
 MAN1DIR=${prefix}/man/man1
 
-MYARCH:=$(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/')
+#MYARCH:=$(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/')
+
+MYARCH=arm
 
 # This extra-ugly cruft is here so make will not run uname and sed each
 # time it looks at $(OBJDIR).  This alone sped up running make when
@@ -88,27 +90,24 @@ ILIBDIR=$(LIBDIR)-$(ARCH)
 
 HOME=$(shell pwd)
 
-WHAT=	$(OBJDIR) $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o $(OBJDIR)/dyn_stop.o \
+WHAT=	$(OBJDIR) \
 	$(OBJDIR)/dietlibc.a $(OBJDIR)/liblatin1.a \
 	$(OBJDIR)/libcompat.a $(OBJDIR)/libm.a \
-	$(OBJDIR)/librpc.a $(OBJDIR)/libpthread.a \
-	$(OBJDIR)/libcrypt.a \
-	$(OBJDIR)/diet $(OBJDIR)/diet-i $(OBJDIR)/elftrunc \
-	$(OBJDIR)/dnsd
+	$(OBJDIR)/libcrypt.a
 
 all: $(WHAT)
 
 profiling: $(OBJDIR)/libgmon.a $(OBJDIR)/pstart.o
 
 CFLAGS=-pipe -nostdinc
-CROSS=
+CROSS?=arm-elf-
 
 CC=gcc
 INC=-I. -isystem include
 
 VPATH=lib:libstdio:libugly:libcruft:libcrypt:libshell:liblatin1:libcompat:libdl:librpc:libregex:libm:profiling
 
-SYSCALLOBJ=$(patsubst syscalls.s/%.S,$(OBJDIR)/%.o,$(wildcard syscalls.s/*.S))
+SYSCALLOBJ=#$(patsubst syscalls.s/%.S,$(OBJDIR)/%.o,$(wildcard syscalls.s/*.S))
 
 LIBOBJ=$(patsubst lib/%.c,$(OBJDIR)/%.o,$(wildcard lib/*.c))
 LIBUGLYOBJ=$(patsubst libugly/%.c,$(OBJDIR)/%.o,$(wildcard libugly/*.c))
@@ -173,11 +172,11 @@ $(OBJDIR)/%.o: %.S $(ARCH)/syscalls.h
 
 $(OBJDIR)/pthread_%.o: libpthread/pthread_%.c
 	$(CROSS)$(CC) $(INC) $(CFLAGS) -c $< -o $@
-	$(COMMENT) -$(CROSS)strip -x -R .comment -R .note $@
+	#$(COMMENT) -$(CROSS)strip -x -R .comment -R .note $@
 
 $(OBJDIR)/%.o: %.c
 	$(CROSS)$(CC) $(INC) $(CFLAGS) -c $< -o $@ -D__dietlibc__
-	$(COMMENT) -$(CROSS)strip -x -R .comment -R .note $@
+	#$(COMMENT) -$(CROSS)strip -x -R .comment -R .note $@
 endif
 
 ifeq ($(shell $(CC) -v 2>&1 | grep "gcc version"),gcc version 4.0.0)
@@ -199,7 +198,7 @@ $(LIBCRUFTOBJ) $(LIBCRYPTOBJ) $(LIBSHELLOBJ) $(LIBREGEXOBJ) \
 $(OBJDIR)/__longjmp.o $(OBJDIR)/setjmp.o \
 $(OBJDIR)/clone.o
 
-$(OBJDIR)/dietlibc.a: $(DIETLIBC_OBJ) $(OBJDIR)/start.o
+$(OBJDIR)/dietlibc.a: $(DIETLIBC_OBJ)
 	$(CROSS)ar cru $@ $(DIETLIBC_OBJ)
 
 $(OBJDIR)/librpc.a: $(LIBRPCOBJ)
@@ -247,18 +246,18 @@ $(PICODIR)/%.o: %.S $(ARCH)/syscalls.h
 
 $(PICODIR)/pthread_%.o: libpthread/pthread_%.c
 	$(CROSS)$(CC) $(INC) $(CFLAGS) -fPIC -D__DYN_LIB -c $< -o $@
-	$(COMMENT) $(CROSS)strip -x -R .comment -R .note $@
+	#$(COMMENT) $(CROSS)strip -x -R .comment -R .note $@
 
 $(PICODIR)/%.o: %.c
 	$(CROSS)$(CC) $(INC) $(CFLAGS) -fPIC -D__DYN_LIB -c $< -o $@
-	$(COMMENT) $(CROSS)strip -x -R .comment -R .note $@
+	#$(COMMENT) $(CROSS)strip -x -R .comment -R .note $@
 
 $(PICODIR)/dstart.o: start.S
 	$(CROSS)$(CC) $(INC) $(CFLAGS) -fPIC -D__DYN_LIB -c $< -o $@
 
 $(PICODIR)/dyn_so_start.o: dyn_start.c
 	$(CROSS)$(CC) $(INC) $(CFLAGS) -fPIC -D__DYN_LIB -D__DYN_LIB_SHARED -c $< -o $@
-	$(COMMENT) $(CROSS)strip -x -R .comment -R .note $@
+	#$(COMMENT) $(CROSS)strip -x -R .comment -R .note $@
 
 DYN_LIBC_PIC = $(LIBOBJ) $(LIBSTDIOOBJ) $(LIBUGLYOBJ) \
 $(LIBCRUFTOBJ) $(LIBCRYPTOBJ) $(LIBSHELLOBJ) $(LIBREGEXOBJ)
@@ -310,19 +309,19 @@ CURNAME=$(notdir $(shell pwd))
 
 $(OBJDIR)/diet: $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o diet.c $(OBJDIR)/dietlibc.a $(OBJDIR)/dyn_stop.o
 	$(CROSS)$(CC) -isystem include $(CFLAGS) -nostdlib -o $@ $^ -DDIETHOME=\"$(HOME)\" -DVERSION=\"$(VERSION)\" -lgcc
-	$(CROSS)strip -R .comment -R .note $@
+	#$(CROSS)strip -R .comment -R .note $@
 
 $(OBJDIR)/diet-i: $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o diet.c $(OBJDIR)/dietlibc.a $(OBJDIR)/dyn_stop.o
 	$(CROSS)$(CC) -isystem include $(CFLAGS) -nostdlib -o $@ $^ -DDIETHOME=\"$(prefix)\" -DVERSION=\"$(VERSION)\" -DINSTALLVERSION -lgcc
-	$(CROSS)strip -R .comment -R .note $@
+	#$(CROSS)strip -R .comment -R .note $@
 
 $(PICODIR)/diet-dyn: $(PICODIR)/start.o $(PICODIR)/dyn_start.o diet.c
 	$(LD_UNSET) $(CROSS)$(CC) -isystem include $(CFLAGS) -fPIC -nostdlib -o $@ $^ -DDIETHOME=\"$(HOME)\" -D__DYN_LIB -DVERSION=\"$(VERSION)\" -L$(PICODIR) -lc -lgcc $(PICODIR)/dyn_stop.o -Wl,-dynamic-linker=$(HOME)/$(PICODIR)/libdl.so
-	$(CROSS)strip -R .command -R .note $@
+	#$(CROSS)strip -R .command -R .note $@
 
 $(PICODIR)/diet-dyn-i: $(PICODIR)/start.o $(PICODIR)/dyn_start.o diet.c
 	$(LD_UNSET) $(CROSS)$(CC) -isystem include $(CFLAGS) -fPIC -nostdlib -o $@ $^ -DDIETHOME=\"$(prefix)\" -D__DYN_LIB -DVERSION=\"$(VERSION)\" -L$(PICODIR) -lc -lgcc $(PICODIR)/dyn_stop.o -Wl,-dynamic-linker=$(ILIBDIR)/libdl.so -DINSTALLVERSION
-	$(CROSS)strip -R .command -R .note $@
+	#$(CROSS)strip -R .command -R .note $@
 
 $(OBJDIR)/djb: $(OBJDIR)/compile $(OBJDIR)/load
 
@@ -526,8 +525,8 @@ $(OBJDIR)/fcntl64.o: dietfeatures.h
 # WANT_SSP
 # This facepalm brought to you by: Ubuntu!
 $(OBJDIR)/stackgap.o: dietfeatures.h
-	$(CROSS)$(CC) $(INC) $(CFLAGS) -c lib/stackgap.c -o $@ -D__dietlibc__ -fno-stack-protector
-	$(COMMENT) -$(CROSS)strip -x -R .comment -R .note $@
+	$(CROSS)$(CC) $(INC) $(CFLAGS) -c lib/stackgap.c -o $@ -D__dietlibc__ # -fno-stack-protector
+	#$(COMMENT) -$(CROSS)strip -x -R .comment -R .note $@
 
 # WANT_MALLOC_ZERO
 $(OBJDIR)/strndup.o: dietfeatures.h

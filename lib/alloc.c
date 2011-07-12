@@ -59,7 +59,7 @@ static __alloc_t* __small_mem[8];
 
 #define __SMALL_NR(i)		(MEM_BLOCK_SIZE/(i))
 
-#define __MIN_SMALL_SIZE	__SMALL_NR(256)		/*   16 /   32 */
+#define __MIN_SMALL_SIZE	__SMALL_NR(MEM_BLOCK_SIZE/sizeof(__alloc_t))
 #define __MAX_SMALL_SIZE	__SMALL_NR(2)		/* 2048 / 4096 */
 
 #define GET_SIZE(s)		(__MIN_SMALL_SIZE<<get_index((s)))
